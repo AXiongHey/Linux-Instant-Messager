@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/axiong/Timely_Communicate'
+make: Leaving directory '/home/axiong/Timely_Communicate'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+
