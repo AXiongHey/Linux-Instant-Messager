@@ -5,6 +5,7 @@
 #include <jsoncpp/json/json.h> 
 #include <mysql/mysql.h>
 #include <event.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include"exit.h"
 #include"mysql.h"
@@ -49,7 +50,10 @@ cout<<"exit cmd: "<<cmd<<endl<<endl;
 	{
 		if( _fd == it->first)
 		{
+			close(_fd);
 			event_free(it->second);
+			aaa.erase(_fd);
+			cout<<"erase success"<<endl;
 			break;
 		}
 	}	

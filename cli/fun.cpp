@@ -24,6 +24,12 @@ void *pth_run(void *arg)
 	long c = (long) arg;
 	char buff[1024] = {0};
 	int n = recv(c,buff,1023,0);
+	if(n==0){
+		cout<<"Server end , exit"<<endl;
+		exit(0);
+	}
+
+
 	while(n != 0)
 	{
 		cout<<"\033[36m"<<buff<<"\n\033[0m"<<endl;
@@ -104,8 +110,11 @@ void do_login(int fd)
 			cout<<"----- \033[35m"<<name<<"\033[0m login sucess!-----"<<endl;
 			success = true;
 		}
-		else cout<<"//login fail!"<<endl;
+		else cout<<"//login fail! Username or Password Error!"<<endl;
 
+	}else{
+		cout<<"log: Server end , exit"<<endl;
+		exit(0);
 	}
 
 	if(success)
@@ -218,6 +227,6 @@ void do_exit(int fd)
 		cerr<<"send reason fail;errno:"<<errno<<endl;
 		return;
 	}
-	exit(0);
 	close(fd);
+	exit(0);
 }

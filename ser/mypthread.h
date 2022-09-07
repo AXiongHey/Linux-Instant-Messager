@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <map>
 #include <event.h>
-
+#include "View.h"
 using namespace std;
 class Pthread
 {
@@ -14,7 +14,7 @@ public:
 private:
 	int _sock_fd;//sock_pair    (1)
 	struct event_base* _base;//libeventg
-	//struct event_base* _base2;
+	map<int,View*> _type_map;
 	map<int,struct event*> _event_map;//存放事件的map表
 	pthread_t _pthread;//线程描述符
 	//friend void signal_cb(int fd,short event,void *arg);

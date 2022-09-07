@@ -36,22 +36,12 @@ cout<<"\n exit cmd: "<<cmd<<endl<<endl;
 		event_free(it->second);
 		cout<<it->first<<" "<<it->second<<endl;
 	}
-	raise(SIGKILL);
-}
-void signal_cb(int fd,short event,void *arg)
-{
-	Tcpsever* mythis = (Tcpsever*) arg;
-	for(int i = 0; i< mythis->_pth_num; i++)
-	{
-		Pthread *th = mythis->_pthread[i];
-		delete(th);
-	}	
-
+	exit(0);
 }
 	//接受用户连接的回调函数
 void listen_cb(int fd,short event,void *arg)
 {
-
+	std::cout<<"\n+++++in listen_cb()---->accept clietnfd,write to sun thread+++++"<<endl;
 	Tcpsever *mythis = (Tcpsever*)arg;
 	struct sockaddr_in caddr;
 	socklen_t len = sizeof(caddr);
@@ -80,7 +70,7 @@ void listen_cb(int fd,short event,void *arg)
 		}
 	}
 
-	std::cout<<"minlisten: "<<minListen<<"minfd: "<<tmpfd<<endl;
+	std::cout<<"minlisten: "<<minListen<<"  minfd: "<<tmpfd<<endl;
 	
 	//将主线程里的 客户端套接字 通过 socktpair 发给子线程
 	char abuff[16] = {0};
@@ -94,13 +84,13 @@ void listen_cb(int fd,short event,void *arg)
 	{
 		std::cout<<"write success"<<endl;
 	}
-
+	std::cout<<"+++++++++++++out listen_cb()++++++++++++++++++++++++++++++"<<endl<<endl;
 }
 
 //读子线程发来的该线程监听的客户端数量，加入map表
 void sock_pair_cb(int fd,short event,void *arg)
 {
-	std::cout<<"+++++++++++++++++in sock_pair_cb()++++++++++++++++++++++++++++"<<endl;
+	std::cout<<"+++++in sock_pair_cb()---->read clietnfd,insert _pth_work_num+++++"<<endl;
 	
 	Tcpsever *mythis = (Tcpsever *)arg;
 	int num = 0;
@@ -115,7 +105,6 @@ void sock_pair_cb(int fd,short event,void *arg)
 	}else
 	{
 	num = atoi(buff);
-	std::cout<<"num :" <<num<<endl;
 
 	//更新到map表_pth_work_num  ----->fd
 
@@ -159,7 +148,6 @@ Tcpsever::Tcpsever(char *ip,short port,int pth_num)
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons(port);
 	saddr.sin_addr.s_addr = inet_addr(ip);
-	std::cout<<"saddr init success"<<endl;
 
 		//设置端口复用
 		int optval = 1;
@@ -195,8 +183,6 @@ Tcpsever::Tcpsever(char *ip,short port,int pth_num)
 
 		//将事件添加到事件列表
 		event_add(ev,NULL);
-		//循环监听
-	//	event_base_dispatch(_base);
 
         std::cout<<"tcpsever listen cb already carry out\n"<<endl;
 
@@ -227,9 +213,6 @@ void Tcpsever::run()
 		}
 
 	}
-	// cout<<"run() for already carry out"<<endl;
-	//struct event* sig_event = evsignal_new(this->_base, SIGINT,signal_cb,this);
-	//event_add(sig_event,NULL);
 	signal(SIGINT,signalCallback);
 	event_base_dispatch(_base);
 }
